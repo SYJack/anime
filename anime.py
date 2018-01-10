@@ -76,7 +76,7 @@ class anime():
                 amineId = int(re.sub('\D', '', str(anime['anim_link'])))
                 #生成动漫链接md5
                 animeLineMd5=self.md5Encode(animeLine)
-                if db.execute('select * from anime_home a where a.ANIME_LINE_MD5 = %s',(animeLineMd5)) == 0:
+                if db.execute('select 1 from anime_home a where a.ANIME_LINE_MD5 = %s limit 1',(animeLineMd5)) == 0:
                     values.append([amineId,anime['anim_name'],anime['cover'],str(zoneCode),str(animeLine),animeLineMd5])
                 else:
                     print(u'已存在')

@@ -1,8 +1,12 @@
 CREATE TABLE `anime_info` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `ANIME_ID` bigint(20) DEFAULT NULL COMMENT '动漫ID',
+  `ANIME_NAME` varchar(100) DEFAULT NULL COMMENT '动漫名称',
   `ANIME_DESC` varchar(100) DEFAULT NULL COMMENT '动漫简介',
   `ANIME_TYPE_ID_LS` varchar(100) DEFAULT NULL COMMENT '动漫类型id',
   `ANIME_PREMIERE` varchar(100) DEFAULT NULL COMMENT '动漫首次播出时间',
+  `ANIME_SCORE` varchar(6) DEFAULT NULL COMMENT '动漫评分',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='动漫信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='动漫详细表';
+
+alter table anime_info add ANIME_NAME varchar(100) DEFAULT NULL COMMENT '动漫名称' after ANIME_ID;

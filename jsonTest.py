@@ -5,6 +5,7 @@ Created on Tue Jan  2 17:21:04 2018
 @author: Administrator
 """
 import threading
+import re
 import time,traceback
 import queue
 #data = re.sub("\D", "", "/donghua_info/2036.html")
@@ -37,7 +38,11 @@ L = ['219.138.58.188', '3128', 'HTTPS','219.138.58.200', '8080', 'HTTP','219.138
 #    return groups
 #for i in range(0,len(L),3):
 #    print(L[i:i+3])
-print([L[i:i+3] for i in range(0,len(L),3)])
+
+
+# print([L[i:i+3] for i in range(0,len(L),3)])
+res = re.sub('\D', '', "aaalll_2")
+print(res)
 
 #class test():
 #    def __init__(self):
