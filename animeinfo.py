@@ -9,6 +9,7 @@ import requests
 import re
 import traceback
 from lxml import etree
+from lxml import html
 from saveMysql import db
 
 class animeinfo():
@@ -47,19 +48,33 @@ class animeinfo():
     def getcontent(self):
         db.execute('select ANIME_LINE from anime_home where ID = 15 limit 1',None)
         animeurl = db.fetchone()
-        content = self.request(animeurl[0])
+        content = self.request("http://donghua.dmzj.com/donghua_info/10766.html")
         if content.status_code != requests.codes.ok:
             print(u'获取失败!请检测网络连接情况或者是否能正常访问该网站...')
             return
-        result = self.xpathresolve(content,"//a[@name='nav_item_category']/@id|//a[@name='nav_item_category']/@title")
+        anime_html = self.xpathresolve(content)
+        anime_id_text = anime_html.xpath("//span[@id='comic_id']")
+        if anime_id_text:
+            anime_id = anime_id_text[0].text
+            anime_name = anime_html.xpath("//span[@class='anim_title_text']/h1")[0].text
+            anime_desc = anime_html.xpath("//span[@id='gamedescall']")[0].text.strip()
+            anime_base_info = anime_html.xpath("//div[@class='anim_attributenew_text']/ul/li")
+            for result in anime_base_info:
+                result_split = result.text.split(":")
+                if result_split[0].strip() == '首播时间':
+                    anime_premiere = result_split[1].strip()
+
+        else:
+            print(u'404错误!')
+        
     
     #多线程获取
     def getanimeinfobythread(self):
         self.getcontent()
     #解析html
-    def xpathresolve(self,content,expression):
-        page=etree.HTML(content.text)
-        return page.xpath(expression)
+    def xpathresolve(self,content):
+        page = html.fromstring(content.text)
+        return page
     
     def request(self,url):
         content=requests.get(url,headers=self.headers)
