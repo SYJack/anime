@@ -89,7 +89,7 @@ class anime():
                 db.rollback()
             else:
                 db.commit()
-                time.sleep(10)
+                time.sleep(5)
     
 #    def request(self, url,referer):
 #        content = request.get(url,5,'s.acg.dmzj.com',referer)

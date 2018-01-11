@@ -41,9 +41,10 @@ L = ['219.138.58.188', '3128', 'HTTPS','219.138.58.200', '8080', 'HTTP','219.138
 
 
 # print([L[i:i+3] for i in range(0,len(L),3)])
-res = re.sub('\D', '', "aaalll_2")
-print(res)
 
+
+s ='-'.join(['1'])
+print(s)
 #class test():
 #    def __init__(self):
 #        self.lock = threading.Lock() #建立一个锁
