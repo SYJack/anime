@@ -43,18 +43,16 @@ L = ['219.138.58.188', '3128', 'HTTPS','219.138.58.200', '8080', 'HTTP','219.138
 # print([L[i:i+3] for i in range(0,len(L),3)])
 
 
-s ='-'.join(['1'])
-print(s)
-#class test():
+# class test():
 #    def __init__(self):
 #        self.lock = threading.Lock() #建立一个锁
-#        
+       
 #    def testThread(self,i):
 #        self.lock.acquire()  
 #        print(i)
 #        time.sleep(1)
 #        self.lock.release()  
-#        
+       
 #    def testbythread(self):
 #            threads=[]
 #            start = time.clock()
@@ -68,8 +66,8 @@ print(s)
 #                thread.join()
 #            print(str(time.clock()-start) + "秒")
 #            print(u'验证完毕')
-#test = test()
-#test.testbythread()
+# test = test()
+# test.testbythread()
 
 
 
@@ -123,3 +121,24 @@ print(s)
 
 # urlF = getUrl([[ 'http://www.xicidaili.com/nn/',145]])
 # print(urlF)
+def consumer():
+    r = ''
+    while True:
+        n = yield r
+        if not n:
+            return
+        print('[CONSUMER] Consuming %s...' % n)
+        r = '200 OK'
+
+def produce(c):
+    c.send(None)
+    n = 0
+    while n < 5:
+        n = n + 1
+        print('[PRODUCER] Producing %s...' % n)
+        r = c.send(n)
+        print('[PRODUCER] Consumer return: %s' % r)
+    c.close()
+
+c = consumer()
+produce(c)

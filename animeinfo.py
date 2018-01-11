@@ -48,7 +48,7 @@ class animeinfo():
     def getcontent(self):
         db.execute('select ANIME_LINE from anime_home where ID = 15 limit 1',None)
         animeurl = db.fetchone()
-        content = self.request("http://donghua.dmzj.com/donghua_info/9240.html")
+        content = self.request("http://donghua.dmzj.com/donghua_info/3203.html")
         if content.status_code != requests.codes.ok:
             print(u'获取失败!请检测网络连接情况或者是否能正常访问该网站...')
             return
@@ -61,15 +61,13 @@ class animeinfo():
             anime_name = anime_html.xpath("//span[@class='anim_title_text']/h1")[0].text
             #获取动漫描述
             anime_desc = anime_html.xpath("//span[@id='gamedescall']")[0].text.strip()
-            anime_base_info_li = anime_html.xpath("//div[@class='anim_attributenew_text']/ul/li")
+            anime_base_info_li = anime_html.xpath("//div[@class='anim_attributenew']/div[2]/ul/li")
             #获取动漫首播时间
             anime_premiere = ''
             #获取动漫类型
             anime_type = ''
             for result in anime_base_info_li:
                 result_split = result.text.split(":")
-                if result_split[0].strip() == '相关动漫':
-                    continue
                 if result_split[0].strip() == '首播时间':
                     anime_premiere = result_split[1].strip()
                 if result_split[0].strip() == '剧情类型':
@@ -79,7 +77,8 @@ class animeinfo():
                     anime_type = '-'.join([re.search('(?<=/acg_donghua/0-0-0-0-all-)\d+',i).group(0) for i in anime_type_ls])
             #获取动漫评分
             anime_score = anime_html.xpath("//span[@class='points_text']")[0].text.strip()
-            anime_score_number = anime_html.xpath("//span[@id='score_count_span']")[0].text.strip()
+            #获取动漫评分人数
+            anime_score_number = re.sub('\D', '', anime_html.xpath("//span[@id='score_count_span']")[0].text.strip())
             print(anime_score_number)
 
         else:

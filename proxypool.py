@@ -115,6 +115,7 @@ class proxypool:
                     self.lock.release() #释放锁
                 finally:
                      time.sleep(1)
+                     #线程告知任务完成使用task_done
                      self.queue.task_done()
                    
     def writeproxy(self,id):
