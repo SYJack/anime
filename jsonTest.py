@@ -8,6 +8,7 @@ import threading
 import re
 import time,traceback
 import queue
+import random
 #data = re.sub("\D", "", "/donghua_info/2036.html")
 #print(data)
 
@@ -121,24 +122,29 @@ L = ['219.138.58.188', '3128', 'HTTPS','219.138.58.200', '8080', 'HTTP','219.138
 
 # urlF = getUrl([[ 'http://www.xicidaili.com/nn/',145]])
 # print(urlF)
-def consumer():
-    r = ''
-    while True:
-        n = yield r
-        if not n:
-            return
-        print('[CONSUMER] Consuming %s...' % n)
-        r = '200 OK'
+# def consumer():
+#     r = ''
+#     while True:
+#         n = yield r
+#         if not n:
+#             return
+#         print('[CONSUMER] Consuming %s...' % n)
+#         r = '200 OK'
 
-def produce(c):
-    c.send(None)
-    n = 0
-    while n < 5:
-        n = n + 1
-        print('[PRODUCER] Producing %s...' % n)
-        r = c.send(n)
-        print('[PRODUCER] Consumer return: %s' % r)
-    c.close()
+# def produce(c):
+#     c.send(None)
+#     n = 0
+#     while n < 5:
+#         n = n + 1
+#         print('[PRODUCER] Producing %s...' % n)
+#         r = c.send(n)
+#         print('[PRODUCER] Consumer return: %s' % r)
+#     c.close()
 
-c = consumer()
-produce(c)
+# c = consumer()
+# produce(c)
+from datetime import datetime, timedelta
+import time
+print(round(time.time()*1000))
+
+print(round(time.time()*1000)-300000)

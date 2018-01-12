@@ -14,7 +14,7 @@ DB_USER = 'root'
 # MySQL密码
 DB_PASS = '167349951'
 # 数据库名称
-DB_NAME = 'animehome'
+DB_NAME = 'test'
 SPIDER_INTERVAL = 5  # 至少保证10秒以上，否则容易被封
 
 class Db(object):

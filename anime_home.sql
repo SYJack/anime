@@ -30,6 +30,8 @@ CREATE TABLE `anime_home` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9068 DEFAULT CHARSET=utf8 COMMENT='动漫之家表';
 
+alter table anime_home add ANIME_TIMESTAMP bigint(20) DEFAULT NULL COMMENT '时间戳'; 
+
 -- ----------------------------
 -- Records of anime_home
 -- ----------------------------
