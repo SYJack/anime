@@ -45,10 +45,10 @@ class animequeue(object):
 		record = db.execute('SELECT ID FROM anime_home a WHERE a.ANIME_INFO_DOWNLOAD_STATUS != 2 LIMIT 1',None)
 		return record
 
-	def complete(self, url):
+	def complete(self, animeid):
 		"""这个函数是更新已完成的URL完成"""
 		try:
-			db.execute('UPDATE anime_home a SET a.ANIME_INFO_DOWNLOAD_STATUS = 2',None)
+			db.execute('UPDATE anime_home a SET a.ANIME_INFO_DOWNLOAD_STATUS = 2 where a.ANIME_ID = %s' % (animeid),None)
 		except Exception as e:
 			db.rollback()
 			raise e

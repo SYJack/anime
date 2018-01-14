@@ -40,7 +40,6 @@ L = ['219.138.58.188', '3128', 'HTTPS','219.138.58.200', '8080', 'HTTP','219.138
 #for i in range(0,len(L),3):
 #    print(L[i:i+3])
 
-
 # print([L[i:i+3] for i in range(0,len(L),3)])
 
 
@@ -143,8 +142,13 @@ L = ['219.138.58.188', '3128', 'HTTPS','219.138.58.200', '8080', 'HTTP','219.138
 
 # c = consumer()
 # produce(c)
-from datetime import datetime, timedelta
-import time
-print(round(time.time()*1000))
 
-print(round(time.time()*1000)-300000)
+
+from saveMysql import db
+
+db.execute('select h.ANIME_ID from anime_home h LEFT JOIN anime_info i on h.ANIME_ID = i.ANIME_ID where i.ANIME_ID is not null AND h.ANIME_INFO_DOWNLOAD_STATUS = 1',None)
+record = db.fetchall()
+for r in record:
+    db.execute('UPDATE anime_home h SET h.ANIME_INFO_DOWNLOAD_STATUS = 2 WHERE h.ANIME_ID = %s' % (r[0]),None)
+db.commit()
+db.close()

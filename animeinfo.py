@@ -119,16 +119,17 @@ def thread_craler(max_threads=10):
             try:
                 print('正在爬取',anime_info[1])
                 content = requestbyproxy(anime_info[1],anime_info[1])
-                lock.acquire()  
-                getcontent(content)
-                lock.release()  
+                if content:
+                    lock.acquire()  
+                    getcontent(content)
+                    lock.release()  
             except Exception as e:
                 traceback.print_exc()
             else:
                 pass
             finally:
                  #线程告知任务完成使用task_done
-                 queue1.task_done()
+                queue1.task_done()
 
     def getcontent(content):
         if content.status_code != requests.codes.ok:
@@ -161,12 +162,21 @@ def thread_craler(max_threads=10):
             anime_score = anime_html.xpath("//span[@class='points_text']")[0].text.strip()
             #获取动漫评分人数
             anime_score_number = re.sub('\D', '', anime_html.xpath("//span[@id='score_count_span']")[0].text.strip())
-            print(anime_desc)
+
+            try:
+                db.execute('INSERT INTO anime_info(ANIME_ID,ANIME_NAME,ANIME_DESC,ANIME_TYPE_ID_LS,ANIME_PREMIERE,ANIME_SCORE,ANIME_SCORE_NUMBER) VALUES (%s,%s,%s,%s,%s,%s,%s)',(int(anime_id),anime_name,anime_desc,anime_type,anime_premiere,anime_score,int(anime_score_number)))
+            except Exception as e:
+                traceback.print_exc()
+                db.rollback()
+            finally:
+                queue.complete(int(anime_id))
+                db.commit()
+
         else:
             print(u'404错误!')
 
     #解析html
-    def xpathresolve(self,content):
+    def xpathresolve(content):
         page = html.fromstring(content.text)
         return page
 
@@ -176,15 +186,17 @@ def thread_craler(max_threads=10):
         return content
 
     threads = []
+    db.conn()
     for i in range(10):
         thread = threading.Thread(target=requestinfo)
         thread.setDaemon(True)
         thread.start() #启动线程
         threads.append(thread)
-        time.sleep(1)
+        time.sleep(3)
 
     for t in threads:
         t.join()
+    db.close()
 
 def test():
     queue1 = queue.pop()
@@ -192,3 +204,5 @@ def test():
 
 if __name__ == "__main__":
     thread_craler()
+    # r = queue.peek()
+    # print(r)
