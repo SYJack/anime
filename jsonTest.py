@@ -68,9 +68,7 @@ L = ['219.138.58.188', '3128', 'HTTPS','219.138.58.200', '8080', 'HTTP','219.138
 #            print(u'验证完毕')
 # test = test()
 # test.testbythread()
-
-
-
+print("aaa")
 #SHARE_Q = queue.Queue()  #构造一个不限制大小的的队列
 #_WORKER_THREAD_NUM = 3   #设置线程个数
 #
@@ -144,11 +142,11 @@ L = ['219.138.58.188', '3128', 'HTTPS','219.138.58.200', '8080', 'HTTP','219.138
 # produce(c)
 
 
-from saveMysql import db
+# from saveMysql import db
 
-db.execute('select h.ANIME_ID from anime_home h LEFT JOIN anime_info i on h.ANIME_ID = i.ANIME_ID where i.ANIME_ID is not null AND h.ANIME_INFO_DOWNLOAD_STATUS = 1',None)
-record = db.fetchall()
-for r in record:
-    db.execute('UPDATE anime_home h SET h.ANIME_INFO_DOWNLOAD_STATUS = 2 WHERE h.ANIME_ID = %s' % (r[0]),None)
-db.commit()
-db.close()
+# db.execute('select h.ANIME_ID from anime_home h LEFT JOIN anime_info i on h.ANIME_ID = i.ANIME_ID where i.ANIME_ID is not null AND h.ANIME_INFO_DOWNLOAD_STATUS = 1',None)
+# record = db.fetchall()
+# for r in record:
+#     db.execute('UPDATE anime_home h SET h.ANIME_INFO_DOWNLOAD_STATUS = 2 WHERE h.ANIME_ID = %s' % (r[0]),None)
+# db.commit()
+# db.close()

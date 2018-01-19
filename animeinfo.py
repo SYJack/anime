@@ -105,9 +105,7 @@ from proxyDownLoad import request
 # animeinfo = animeinfo()
 # animeinfo.getanimeinfobythread()
 def thread_craler(max_threads=10):
-
     queue1 = queue.pop()
-
     lock = threading.Lock() #建立一个锁
 
     def requestinfo():
@@ -115,6 +113,7 @@ def thread_craler(max_threads=10):
             if not queue1.empty():
                 anime_info = queue1.get()
             else:
+                print("进入循环检验")
                 return
             try:
                 print('正在爬取',anime_info[1])
@@ -174,6 +173,7 @@ def thread_craler(max_threads=10):
 
         else:
             print(u'404错误!')
+            queue.complete(int(anime_id_text[0].text))
 
     #解析html
     def xpathresolve(content):
@@ -187,7 +187,7 @@ def thread_craler(max_threads=10):
 
     threads = []
     db.conn()
-    for i in range(10):
+    for i in range(20):
         thread = threading.Thread(target=requestinfo)
         thread.setDaemon(True)
         thread.start() #启动线程
@@ -204,5 +204,12 @@ def test():
 
 if __name__ == "__main__":
     thread_craler()
+    time.sleep(5)
+    if queue.peek() == 0:
+      print("完成")
+    else:
+      queue.repair()
+      print("重置完成")
+      thread_craler()
     # r = queue.peek()
     # print(r)

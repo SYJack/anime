@@ -27,14 +27,14 @@ class animequeue(object):
 		try:
 			db.execute('SELECT a.ID,a.ANIME_LINE,a.ANIME_INFO_DOWNLOAD_STATUS FROM anime_home a WHERE a.ANIME_INFO_DOWNLOAD_STATUS = 0',None)
 			records = db.fetchall()
-			db.execute('UPDATE anime_home a SET a.ANIME_INFO_DOWNLOAD_STATUS = 1',None)
+			db.execute('UPDATE anime_home a SET a.ANIME_INFO_DOWNLOAD_STATUS = 1 WHERE a.ANIME_INFO_DOWNLOAD_STATUS = 0',None)
 			if records:
 				for r in records:
 					self.queue.put(r)
 				return self.queue
-			else:
-				self.repair()
-				raise KeyError
+			# else:
+			# 	self.repair()
+			# 	raise KeyError
 		except Exception as e:
 			db.rollback()
 			raise e
@@ -57,15 +57,15 @@ class animequeue(object):
 
 	def repair(self):
 		try:
-			db.execute('SELECT a.ID,a.ANIME_LINE,a.ANIME_INFO_DOWNLOAD_STATUS FROM anime_home a WHERE a.ANIME_INFO_DOWNLOAD_STATUS != 2',None)
+			db.execute('SELECT h.* FROM anime_home h LEFT JOIN anime_info i on (h.ANIME_ID = i.ANIME_ID) WHERE i.ANIME_ID IS NOT NULL',None)
 			records = db.fetchall()
 			if records:
-				for r in records:
-					db.execute('UPDATE anime_home a SET a.ANIME_INFO_DOWNLOAD_STATUS = 0 WHERE a.ID = %s' % (r[0]),None)
+				for index,r in enumerate(records):
+					db.execute('UPDATE anime_home a SET a.ANIME_INFO_DOWNLOAD_STATUS = 2 WHERE a.ID = %s' % (r[0]),None)
+			db.execute('UPDATE anime_home h SET h.ANIME_INFO_DOWNLOAD_STATUS = 0 WHERE h.ANIME_INFO_DOWNLOAD_STATUS =1',None)
 		except Exception as e:
 			db.rollback()
 			raise e
 		finally:
 			db.commit()
-
 queue = animequeue()
