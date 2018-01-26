@@ -150,3 +150,6 @@ print("aaa")
 #     db.execute('UPDATE anime_home h SET h.ANIME_INFO_DOWNLOAD_STATUS = 2 WHERE h.ANIME_ID = %s' % (r[0]),None)
 # db.commit()
 # db.close()
+from bloomfilter.bitmap import BitMap
+
+BitMap.test(8)

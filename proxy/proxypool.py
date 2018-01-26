@@ -5,6 +5,10 @@ Created on Thu Jan  4 23:33:22 2018
 @author: jack
 """
 
+import sys
+import os
+sys.path.append(os.getcwd() + '/db')
+sys.path.append(os.getcwd() + '/proxyrequest')
 import requests
 import random
 import json
@@ -34,7 +38,7 @@ class proxypool:
                 return
             proxyDataLs = json.loads(html.text)['data']
             for proxy in proxyDataLs:
-                proxyLs.append([proxy['type'],proxy['ip'],str(proxy['port']),round(time.time()*1000),None,self.md5Encode(proxy['ip'])])
+                proxyLs.append([proxy['proxyType'],proxy['proxyAddress'],str(proxy['proxyPort']),round(time.time()*1000),None,self.md5Encode(proxy['proxyAddress'])])
             try:
                 db.executemany('replace into proxyls(PROXY_TYPE,PROXY_ADDR,PROXY_PORT,PROXY_ADD_TIME,PROXY_CHECK_TIME,PROXY_MD5) values (%s,%s,%s,%s,%s,%s)',proxyLs)
             except Exception as e:
@@ -102,8 +106,9 @@ class proxypool:
                 else:
                     return
                 try:
-                    requests.get('http://donghua.dmzj.com/', proxies={proxy[1]:'http://'+proxy[2]+':'+proxy[3]},timeout =5)
-                    print(u'验证'+proxy[1]+':'+'http://'+proxy[2]+':'+proxy[3])
+                    start = time.clock()
+                    requests.get('https://www.baidu.com/', proxies={proxy[1]:'http://'+proxy[2]+':'+proxy[3]},timeout =5)
+                    print(u'验证'+proxy[1]+':'+'http://'+proxy[2]+':'+proxy[3],'响应时间'+str(time.clock()-start) + '秒')
                 except Exception as e:
                     traceback.print_exc()
                     self.lock.acquire()#获得锁
@@ -159,7 +164,7 @@ class proxypool:
         start = time.clock()
         for p in proxyLs:
             self.queue.put(p)
-        for i in range(5):
+        for i in range(8):
             thread = threading.Thread(target=self.checkproxy)
             thread.setDaemon(True)
             thread.start() #启动线程

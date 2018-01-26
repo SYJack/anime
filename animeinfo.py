@@ -10,6 +10,11 @@ import traceback
 import threading
 import time
 import requests
+import sys
+import os
+sys.path.append(os.getcwd() + '/db')
+sys.path.append(os.getcwd() + '/queue')
+sys.path.append(os.getcwd() + '/proxyrequest')
 from lxml import etree
 from lxml import html
 from saveMysql import db
@@ -116,9 +121,11 @@ def thread_craler(max_threads=10):
                 print("进入循环检验")
                 return
             try:
-                print('正在爬取',anime_info[1])
-                content = requestbyproxy(anime_info[1],anime_info[1])
+                # 代理爬取
+                # content = requestbyproxy(anime_info[1],anime_info[1])
+                content = request(anime_info[1])
                 if content:
+                    print('正在爬取',anime_info[1])
                     lock.acquire()  
                     getcontent(content)
                     lock.release()  
@@ -168,13 +175,10 @@ def thread_craler(max_threads=10):
                 traceback.print_exc()
                 db.rollback()
             finally:
+                print(u'爬取成功...')
                 queue.complete(int(anime_id))
-                db.commit()
-
         else:
             print(u'404错误!')
-            queue.complete(int(anime_id_text[0].text))
-
     #解析html
     def xpathresolve(content):
         page = html.fromstring(content.text)
@@ -185,9 +189,14 @@ def thread_craler(max_threads=10):
         content.encoding = 'utf-8'
         return content
 
+    def request(url):
+        content=requests.get(url,headers={'User-Agent':"Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)"})
+        content.encoding='utf-8'
+        return content
+
     threads = []
     db.conn()
-    for i in range(20):
+    for i in range(5):
         thread = threading.Thread(target=requestinfo)
         thread.setDaemon(True)
         thread.start() #启动线程
@@ -210,6 +219,6 @@ if __name__ == "__main__":
     else:
       queue.repair()
       print("重置完成")
-      thread_craler()
+    # thread_craler()
     # r = queue.peek()
     # print(r)

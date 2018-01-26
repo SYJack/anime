@@ -14,6 +14,9 @@ import traceback
 import re
 import hashlib
 import json
+import sys
+import os
+sys.path.append(os.getcwd() + '/db')
 from saveMysql import db
 
 class anime():

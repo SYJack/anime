@@ -8,6 +8,9 @@ Created on Mon Jan  1 20:39:01 2018
 import requests
 import random
 import time,traceback
+import sys
+import os
+sys.path.append(os.getcwd() + '/db')
 from saveMysql import db
 
 class download():

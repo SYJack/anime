@@ -6,6 +6,9 @@
 import traceback
 import time
 from queue import Queue
+import sys
+import os
+sys.path.append(os.getcwd() + '/db')
 from saveMysql import db
 
 class animequeue(object):
@@ -69,3 +72,4 @@ class animequeue(object):
 		finally:
 			db.commit()
 queue = animequeue()
+# queue.repair()
