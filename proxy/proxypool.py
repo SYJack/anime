@@ -107,7 +107,7 @@ class proxypool:
                     return
                 try:
                     start = time.clock()
-                    requests.get('https://www.baidu.com/', proxies={proxy[1]:'http://'+proxy[2]+':'+proxy[3]},timeout =5)
+                    requests.get('http://donghua.dmzj.com/', proxies={proxy[1]:'http://'+proxy[2]+':'+proxy[3]},timeout =5)
                     print(u'验证'+proxy[1]+':'+'http://'+proxy[2]+':'+proxy[3],'响应时间'+str(time.clock()-start) + '秒')
                 except Exception as e:
                     traceback.print_exc()
@@ -119,7 +119,6 @@ class proxypool:
                     self.writeproxy(proxy[0])
                     self.lock.release() #释放锁
                 finally:
-                     time.sleep(1)
                      #线程告知任务完成使用task_done
                      self.queue.task_done()
                    
@@ -166,9 +165,9 @@ class proxypool:
             self.queue.put(p)
         for i in range(8):
             thread = threading.Thread(target=self.checkproxy)
-            thread.setDaemon(True)
             thread.start() #启动线程
             threads.append(thread)
+            time.sleep(1)
         #结束线程
         for thread in threads:
             thread.join()

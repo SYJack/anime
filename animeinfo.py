@@ -10,16 +10,11 @@ import traceback
 import threading
 import time
 import requests
-import sys
-import os
-sys.path.append(os.getcwd() + '/db')
-sys.path.append(os.getcwd() + '/queue')
-sys.path.append(os.getcwd() + '/proxyrequest')
 from lxml import etree
 from lxml import html
-from saveMysql import db
-from animequeue import queue
-from proxyDownLoad import request
+from db.saveMysql import db
+from animequeue.animequeue import queue
+from proxyrequest.proxyDownLoad import request
 
 # class animeinfo():
     
@@ -122,8 +117,8 @@ def thread_craler(max_threads=10):
                 return
             try:
                 # 代理爬取
-                # content = requestbyproxy(anime_info[1],anime_info[1])
-                content = request(anime_info[1])
+                content = requestbyproxy(anime_info[1],anime_info[1])
+                # content = request(anime_info[1])
                 if content:
                     print('正在爬取',anime_info[1])
                     lock.acquire()  
@@ -177,6 +172,7 @@ def thread_craler(max_threads=10):
             finally:
                 print(u'爬取成功...')
                 queue.complete(int(anime_id))
+                db.commit()
         else:
             print(u'404错误!')
     #解析html
@@ -189,14 +185,14 @@ def thread_craler(max_threads=10):
         content.encoding = 'utf-8'
         return content
 
-    def request(url):
-        content=requests.get(url,headers={'User-Agent':"Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)"})
-        content.encoding='utf-8'
-        return content
+    # def request(url):
+    #     content=requests.get(url,headers={'User-Agent':"Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)"})
+    #     content.encoding='utf-8'
+    #     return content
 
     threads = []
     db.conn()
-    for i in range(5):
+    for i in range(10):
         thread = threading.Thread(target=requestinfo)
         thread.setDaemon(True)
         thread.start() #启动线程

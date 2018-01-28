@@ -5,19 +5,15 @@ Created on Mon Jan  1 15:24:48 2018
 @author: jack
 """
 
-import os
 import random
-import requests
-import sys
 import time
 import traceback
 import re
 import hashlib
 import json
 import sys
-import os
-sys.path.append(os.getcwd() + '/db')
-from saveMysql import db
+from db.saveMysql import db
+import requests
 
 class anime():
     def all_url(self,baseUrl,referer):
