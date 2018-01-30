@@ -167,16 +167,17 @@ from proxyDownLoad import request
 def animeimgdownload():
     file_path = 'F:/python/animeimg2/'
     queue = Queue()
+
     def getanimeimgurlfrommysql():
       try:
         db.execute('SELECT a.ANIME_ID,a.ANIME_IMAGE FROM anime_home a',None)
         records = db.fetchall()
+        if records:
+          for r in records:
+              queue.put(r)
         if not os.path.exists(file_path):
             print ('文件夹',file_path,'不存在，重新建立')
             os.makedirs(file_path)
-        if records:
-            for r in records:
-                queue.put(r)
       except Exception as e:
         pass
       else:
@@ -184,24 +185,19 @@ def animeimgdownload():
       finally:
         pass
       pass
-    def downloadimg(record):
-        r = url_open('http://donghua.dmzj.com{}'.format(record[1]))
+    def downloadimg(animeimg):
         try:
+            r = url_open('http://donghua.dmzj.com{}'.format(animeimg[1]))
             # print(animeimg)
             if r.status_code == requests.codes.ok:
-              anime_img_name = file_path +'animepic_{}.jpg'.format(record[0])
+              anime_img_name = file_path +'animepic_{}.jpg'.format(animeimg[0])
               with open(anime_img_name,"wb") as f:
                   f.write(r.content)
                   f.flush()
               f.close()
-              gevent.sleep(random.randint(0,2)*0.001)
+              time.sleep(0.5)
         except Exception as e:
-              anime_img_name = file_path +'animepic_{}.jpg'.format(record[0])
-              with open(anime_img_name,"wb") as f:
-                  f.write(r.content)
-                  f.flush()
-              f.close()
-              gevent.sleep(random.randint(0,2)*0.001)
+          traceback.print_exc()
         finally:
           pass
     def url_open(url):
@@ -211,14 +207,13 @@ def animeimgdownload():
       req = request.get(url,5,'donghua.dmzj.com',None)
       return req
 
-    getanimeimgurlfrommysql()
+    records = getanimeimgurlfrommysql()
     pool = gevent.pool.Pool(20)
     threads = []
     for r in records:
         threads.append(pool.spawn(downloadimg,r))
-    gevent.joinall(threading)
+    gevent.joinall(threads)
+
 
 if __name__ == "__main__":
-    t1 = time.time()
     animeimgdownload()
-    print(time.time() - t1)
