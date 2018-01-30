@@ -34,21 +34,20 @@ class asyncproxydownload(object):
                 "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"
             ]
     async def _asyncget(self,url,timeout,host,referer,proxy = None,num_retries = 6):
-        await UA =random.choice(self.user_agent_list)
+        UA =random.choice(self.user_agent_list)
         headers = {
                 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
                 'Accept-Encoding': "gzip, deflate",
                 'Accept-Language': "zh-CN,zh;q=0.8",
                 'Connection': "keep-alive",
                 'Host':host,
-                'Referer':referer,
                 'User-Agent':UA}
         try:
             async with aiohttp.ClientSession() as session:
-                proxyIp = await random.choice(self.proxyLs)
-                proxy = proxyIp[1]:'http://'+proxyIp[2]+':'+str(proxyIp[3])
-                async with session.get(url,headers = headers,proxies = proxy,timeout = timeout) as content:
-                    if content.status_code == 200:
+                proxyIp = random.choice(self.proxyLs)
+                proxy = proxyIp[1]+'://'+proxyIp[2]+':'+str(proxyIp[3])
+                async with session.get(url,headers = headers,proxy = proxy,timeout = timeout) as content:
+                    if content.status == 200:
                         return content
                     else:
                         print(u'重新选择代理...')
@@ -59,8 +58,8 @@ class asyncproxydownload(object):
             traceback.print_exc()
             async with aiohttp.ClientSession() as session:
                 await asyncio.sleep(3)
-                proxyIp =await random.choice(self.proxyLs)
-                proxy = proxyIp[1]:'http://'+proxyIp[2]+':'+str(proxyIp[3])
+                proxyIp = random.choice(self.proxyLs)
+                proxy =proxyIp[1]+'://'+proxyIp[2]+':'+str(proxyIp[3])
                 print(u'正在更换代理......')
                 print(u'当前使用的代理是：',proxy)
                 return self._asyncget(url,timeout,host,referer,proxy,)
