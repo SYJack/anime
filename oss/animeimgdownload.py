@@ -68,7 +68,7 @@ def animeimgdownload():
     threads = []
     for i in range(10):
         thread = threading.Thread(target=downloadimg)
-        # thread.setDaemon(True)
+        thread.setDaemon(True)
         thread.start()
         threads.append(thread)
         time.sleep(1)

@@ -13,7 +13,7 @@ from asyncproxydownload import asyncrequest
 class aiohttpdemo(object):
     def __init__(self):
         self.animequeue=None
-        self.file_path = 'F:/python/animeimg3/'
+        self.file_path = 'D:/animeimg/animeimg3/'
         self.coro_count = 20
   
     async def get_animequeue(self):
