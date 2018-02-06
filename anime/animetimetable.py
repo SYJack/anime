@@ -24,7 +24,7 @@ class animetimetable(object):
       dataJson = json.loads(content.text)
       if dataJson['status'] == 200:
         if len(dataJson['data']['page']['list']):
-            values=[]
+            values_insert=[]
             for i in dataJson['data']['page']['list']:
                 anime_bid = int(i['bid'])
                 anime_name = i['title']
@@ -37,10 +37,19 @@ class animetimetable(object):
                 anime_origin_station = i['originStation']
                 anime_play_url = i['playUrl']
                 anime_play_episode = i['episode']
-                values.append([anime_bid,None,anime_name,anime_cover,anime_vertical_cover,anime_play_date,anime_play_time,anime_origin_time,anime_play_site,anime_origin_station,anime_play_url,anime_play_episode])
+                if db.execute('select 1 from anime_timetable a where a.ANIME_BID = %s limit 1',(anime_bid)) == 0:
+                    values_insert.append([anime_bid,None,anime_name,anime_cover,anime_vertical_cover,anime_play_date,anime_play_time,anime_origin_time,anime_play_site,anime_origin_station,anime_play_url,anime_play_episode])
+                else:
+                    try:
+                      db.execute("update anime_timetable t set t.ANIME_PLAY_DATE = '%s',t.ANIME_PLAY_EPISODE = '%s' where t.ANIME_BID = %d" % (anime_play_date,anime_play_episode,anime_bid),None)
+                    except Exception as e:
+                      db.rollback()
+                      traceback.print_exc()
             try:
-              db.executemany('insert into anime_timetable(ANIME_BID,ANIME_ID,ANIME_NAME,ANIME_COVER,ANIME_VERTICAL_COVER,ANIME_PLAY_DATE,ANIME_PLAY_TIME,ANIME_ORIGIN_TIME,ANIME_PLAY_SITE,ANIME_ORIGIN_STATION,ANIME_PLAY_URL,ANIME_PLAY_EPISODE) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',values)
+              if len(values_insert):
+                db.executemany('insert into anime_timetable(ANIME_BID,ANIME_ID,ANIME_NAME,ANIME_COVER,ANIME_VERTICAL_COVER,ANIME_PLAY_DATE,ANIME_PLAY_TIME,ANIME_ORIGIN_TIME,ANIME_PLAY_SITE,ANIME_ORIGIN_STATION,ANIME_PLAY_URL,ANIME_PLAY_EPISODE) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',values_insert)
             except Exception as e:
+              db.rollback()
               traceback.print_exc()
             finally:
               db.commit()
@@ -55,11 +64,15 @@ class animetimetable(object):
       content.encoding = 'utf-8'
       return content
   def main(self):
-      self.getData('https://app.anitama.net/bangumi?pageNo=1&isEnd=&year=')
-      # content = self.requestbyproxy('https://app.anitama.net/bangumi?pageNo=1&isEnd=&year=')
-      # dataJson = json.loads(content.text)
-      # for p in range(1,(round(int(dataJson['data']['page']['totalCount'])/20)+1)):
-      #     print(p)
+      # self.getData('https://app.anitama.net/bangumi?pageNo=1&isEnd=&year=')
+      currentyear = time.strftime('%Y',time.localtime(time.time()))
+      content = self.requestbyproxy('https://app.anitama.net/bangumi?pageNo=1&isEnd=&year={}'.format(currentyear))
+      dataJson = json.loads(content.text)
+      for p in range(1,(round(int(dataJson['data']['page']['totalCount'])/20)+1)):
+          print(u'正在爬取第',p,'页数据')
+          self.getData('https://app.anitama.net/bangumi?pageNo={}&isEnd=&year={}'.format(p,currentyear))
+          print(u'准备爬取第',p+1,'页数据')
+          time.sleep(1)
       # for d in range(7):
       #     today = datetime.date.today()
       #     tomorrow = today + datetime.timedelta(days=d)
